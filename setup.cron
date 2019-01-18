@@ -1,0 +1,1 @@
+1 0 * * 1 /usr/local/bin/Rscript /home/source/UpdateNOAA.R
