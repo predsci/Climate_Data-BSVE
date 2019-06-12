@@ -19,7 +19,7 @@ source(paste0(Rfuns_dir, "MongoFuns.R"))
 source(paste0(Rfuns_dir, "NOAA_Funs.R"))
 
 # Update mongo files from NOAA ftp
-# Check_NOAA_FTP(local_dir=my_dir)
+Check_NOAA_FTP(local_dir=my_dir)
 
 # Update noaa_daily table from mongo files
 UpdateNOAA_SQL_daily(local_dir=my_dir)

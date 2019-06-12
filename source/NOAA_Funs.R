@@ -113,7 +113,7 @@ Check_NOAA_FTP <- function(local_dir=NULL) {
 
 UpdateNOAA_SQL_daily <- function(local_dir="/Users/turtle/") {
   
-  DataDir = "~/Dropbox/MyLEPR/SQL/DataUpdate/NOAA_4x/" # NOAA climate data
+  # DataDir = "~/Dropbox/MyLEPR/SQL/DataUpdate/NOAA_4x/" # NOAA climate data
   
   # Read NOAA -> master_key map from MongoDB
   read_out = ReadNOAA_map(targetdir=local_dir)
@@ -903,7 +903,7 @@ AverageRows = function(data=NULL, weights=NULL) {
 }
 
 # Open a connection to BSVE PostGreSQL database.  Be sure to dbDisconnect() when done.
-OpenCon <- function(sql_db='bsve') {
+OpenCon <- function(sql_db='cbip') {
   #' Open a Connection to MySQL/PostGreSQL Database.
   #'
   #' This function uses guest credectials to open a read-only connection to the MySQL mydatabase.
@@ -931,7 +931,14 @@ OpenCon <- function(sql_db='bsve') {
     password="vHFUYR52"
     host="dataservices-postgresql.bsvecosystem.net"
     dbname="displaydicedata"
-  } 
+  } else if (tolower(sql_db)=="cbip") {
+    drv = MySQL()
+    user=""
+    port=5432
+    password=""
+    host=""
+    dbname="displaydicedata"
+  }
   
   for (ii in 1:10) {
     # attempt to establish the database connection

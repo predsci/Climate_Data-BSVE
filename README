@@ -4,7 +4,7 @@ Summary
 The primary function of this code is to update population-weighted NOAA climate data stored in the BSVE PostgreSQL system and for use with DICE.  For portability and future installation into the BSVE framework, the code is setup as part of a Docker container.  All climate streams are calculated over the entire range of raw data (1979-present) in order to provide historic reference.  For a more detailed explanation of the process from raw NOAA grid data to population-weighted time-series, see the DICE manual. 
 
 Functional Overview
-These functions require access to the NOAA ftp site ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/gaussian_grid/.  The code first checks for updated files at the ftp site.  It then compiles a list of locations from the *_lut tables in PostgreSQL and updates the daily climate time-series for each location.  These time-series are stored in the table noaa_daily.  The final step is to create climate time series at a cadence that matches the incidence data.  
+These functions require access to the NOAA ftp site ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/gaussian_grid/.  The code first checks for updated files at the ftp site.  It then compiles a list of locations from the *_lut tables in PostgreSQL(MySQL) and updates the daily climate time-series for each location.  These time-series are stored in the table noaa_daily.  The final step is to create climate time series at a cadence that matches the incidence data.  All of these steps are accomplished by running UpdateNOAA.R located in the source/ subdirectory.
 
 Example docker container build:
 > cd /.../docker-NOAA_proc
@@ -16,9 +16,9 @@ Manual execution
 # change directories within container
 root@...:/home/shiny# cd /home/source
 # Execute NOAA update code
-root@...:/home/ssource# Rscript UpdateNOAA.R
+root@...:/home/source# Rscript UpdateNOAA.R
 # exit container
-root@...:/home/ssource# exit
+root@...:/home/source# exit
 > 
 
 Key 
@@ -28,9 +28,32 @@ root@...:...#    Docker container bash prompt
 
 
 Crontab
-NOAA files at the ftp site are generally updated once a month near the beginning of the month.  However the day of the month will vary substantially at times.  Thus this process is scheduled to run once a week.  Most weeks it will check for updated data and finding none, it will do nothing.
+NOAA files at the ftp site are generally updated once a month near the beginning of the month.  However the day of the month will vary substantially at times.  Thus this process should be scheduled to run once a week.  Most weeks it will check for updated data and finding none, it will do nothing.
 
+
+Connection Setup
+MySQL connections: In source/NOAA_funs.R, the function OpenCon() needs connection info for the MySQL database.  I have set a connection to 'cbip' as the default, but it needs to have user, password, port, and host values filled in.
+MongoDB connections: Each function in source/MongoFuns.R requires connection info.  The host, user, pw, and port fields should be updated.  I assume that database, collection, and filenames will remain the same.
+
+
+Initial File Setup
+The data files in sub-directory initialize/ need to be written to MongoDB and tracked in a MySQL table called 'noaa_mongo_files'.  I was planning to do this from my desktop using NOAA_dat_init_mongo.R, but it may or may not be useful in your environment.  A summary of the files and where they should be written in mongo:
+               filename   		db name 	collection
+  Pop_map_NOAA2GADM.Rds	    dice_forecast_rdata      dice_data_aux
+   air.2m.gauss.1979.nc     dice_forecast_rdata      NOAA_dat_temp
+  shum.2m.gauss.1979.nc     dice_forecast_rdata        NOAA_dat_sh
+prate.sfc.gauss.1979.nc     dice_forecast_rdata    NOAA_dat_precip
+
+Each file also gets a row in the MySQL table noaa_mongo_files defined as:
+	CREATE TABLE noaa_mongo_files (
+                                id SERIAL PRIMARY KEY,
+                                filename VARCHAR(50),
+                                collection VARCHAR(50),
+                                file_id VARCHAR(50),
+                                last_update DATE
+				);
+The column 'file_id' is the Mongo file id; 'last_update' is the last date that this file was updated.
 
 
 Progress Updates
-1/17/2019  Due to BSVE MongoDB outage, this code has not been completely tested in the container environment.  The source R-code has been completely tested in a Desktop (Mac) environment.
+1/17/2019  Due to BSVE MongoDB outage, this code has not been completely tested in the container environment.  The source R-code has been completely tested in a desktop (Mac OSX) environment.
