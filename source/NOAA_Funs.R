@@ -915,8 +915,8 @@ OpenCon <- function(sql_db='cbip') {
   
   if (tolower(sql_db)=="predsci") {
     drv  = MySQL()
-    user = "epi_guest"
-    password="UY5GE2kfUa"
+    user = "cbip_read"
+    password="Bb*Ub#704#Dz3s"
     dbname='epi_data'
     port = 3306
     if (Sys.info()["nodename"]=="Q") {
@@ -938,6 +938,13 @@ OpenCon <- function(sql_db='cbip') {
     password=""
     host=""
     dbname="displaydicedata"
+  } else if (tolower(sql_db)=="dcs_aws") {
+    drv = MySQL()
+    user = "dice_sync"
+    host = "cbip.cxg97l2hxl8x.us-east-1.rds.amazonaws.com"
+    password = "dice123$$"
+    port = 3306
+    dbname="epi_data"
   }
   
   for (ii in 1:10) {

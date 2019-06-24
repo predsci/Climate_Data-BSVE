@@ -57,3 +57,7 @@ The column 'file_id' is the Mongo file id; 'last_update' is the last date that t
 
 Progress Updates
 1/17/2019  Due to BSVE MongoDB outage, this code has not been completely tested in the container environment.  The source R-code has been completely tested in a desktop (Mac OSX) environment.
+
+6/12/2019 Code was updated to work with DCS AWS setup.
+
+6/24/2019 The file Copy_MySQL_2_CBIPMySQL.R was added to update incidence database from the Predictive Science incidence database.  This file will run in the same container and requires NOAAFuns.R from this repo.  The script is run with 'Rscript Copy_MySQL_2CBIPMySQL.R' and should be scheduled weekly.  Like the climate data code, this may require some setup of credentials in the OpenCon() function of NOAAFuns.R.
